@@ -2,13 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\RoleResource\RelationManagers\PermissionsRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\RolesRelationManager;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Pages\Page;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -24,7 +25,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Builder;
-
+use Illuminate\Database\Eloquent\Collection;
 
 class UserResource extends Resource
 {
@@ -41,7 +42,7 @@ class UserResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Toggle::make('is_admin')
+                Toggle::make('is_admin')
                     ->required(),
                 TextInput::make('email')
                     ->email()
@@ -85,6 +86,7 @@ class UserResource extends Resource
                 ->dateTime('d-M-Y')
                 ->sortable()
                 ->searchable(),
+               
         ])
         ->filters([
             TrashedFilter::make(),
@@ -97,6 +99,7 @@ class UserResource extends Resource
             DeleteBulkAction::make(),
             RestoreBulkAction::make(),
             ForceDeleteBulkAction::make(),
+            Tables\Actions\BulkAction::make('activate'),
         ]);
     }
     public static function getEloquentQuery(): Builder
@@ -109,12 +112,8 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            PermissionsRelationManager::class
+            RolesRelationManager::class
         ];
-    }
-    public function getQuery(): Builder
-    {
-        return User::query()->withoutTrashed();
     }
     public static function getPages(): array
     {
