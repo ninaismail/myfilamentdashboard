@@ -20,7 +20,7 @@ class RolesAndPermissionsSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
         
         //Misc Permissions = standard user
-        //$miscPermission = Permission::create(['name'=>'N/A']);
+        $miscPermission = Permission::create(['name'=>'no permissions']);
 
         //User Model
         $userPermission1 = Permission::create(['name'=>'create user']);
@@ -47,9 +47,9 @@ class RolesAndPermissionsSeeder extends Seeder
         //Create Roles
 
         //Standard user Role
-        //$userRole = Role::create(['name' => 'user'])->syncPermissions([
-        //    $miscPermission
-       // ]);
+        $userRole = Role::create(['name' => 'user'])->syncPermissions([
+           $miscPermission
+       ]);
         //Super Admin Role
         $superadminRole = Role::create(['name' => 'super-admin'])->syncPermissions([
             $adminPermission1,
@@ -100,46 +100,52 @@ class RolesAndPermissionsSeeder extends Seeder
             $adminPermission1
         ]);   
         
-        User::Create([
-            'name'=>'super admin',
-            'is_admin'=> 1,
-            'email'=> 'superadmin@admin.com',
-            'password'=>Hash::make('admin1234'),
-            'remember_token'=> Str::random(10)
-        ])->assignRole($superadminRole);   
+        // CREATE ADMINS & USERS
+        User::create([
+            'name' => 'super admin',
+            'is_admin' => 1,
+            'email' => 'super@admin.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
+        ])->assignRole($superadminRole);
 
-        User::Create([
-            'name'=>'admin',
-            'is_admin'=> 1,
-            'email'=> 'admin@admin.com',
-            'password'=>Hash::make('admin1234'),
-            'remember_token'=> Str::random(10)
-        ])->assignRole($adminRole);    
+        User::create([
+            'name' => 'admin',
+            'is_admin' => 1,
+            'email' => 'admin@admin.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
+        ])->assignRole($adminRole);
 
-        User::Create([
-            'name'=>'developer',
-            'is_admin'=> 0,
-            'email'=> 'developer@admin.com',
-            'password'=>Hash::make('admin1234'),
-            'remember_token'=> Str::random(10)
-        ])->assignRole($developerRole);         
-        
-        User::Create([
-            'name'=>'moderator',
-            'is_admin'=> 0,
-            'email'=> 'moderator@admin.com',
-            'password'=>Hash::make('admin1234'),
-            'remember_token'=> Str::random(10)
+        User::create([
+            'name' => 'moderator',
+            'is_admin' => 1,
+            'email' => 'moderator@admin.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
         ])->assignRole($moderatorRole);
 
-        // for($i=1;$i<10;$i++){
-        //     User::Create([
-        //         'name'=>'test'.$i,
-        //         'is_admin'=> 0,
-        //         'email'=> 'test'.$i.'@admin.com',
-        //         'password'=>Hash::make('admin1234'),
-        //         'remember_token'=> Str::random(10)
-        //     ])->assignRole($userRole); 
-        //}
+        User::create([
+            'name' => 'developer',
+            'is_admin' => 1,
+            'email' => 'developer@admin.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
+        ])->assignRole($developerRole);
+
+        for ($i=1; $i < 20; $i++) {
+            User::create([
+                'name' => 'Test '.$i,
+                'is_admin' => 0,
+                'email' => 'test'.$i.'@test.com',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'), // password
+                'remember_token' => Str::random(10),
+            ])->assignRole($userRole);
+        }
     }
 }
